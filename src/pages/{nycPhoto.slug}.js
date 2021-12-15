@@ -43,6 +43,30 @@ const Template = ({
   );
 };
 
+export async function config() {
+  const {
+    data: {
+      allNycPhoto: {
+        nodes: { likes }
+      }
+    }
+  } = graphql`
+    {
+      allNycPhoto {
+        nodes {
+          likes
+        }
+      }
+    }
+  `;
+
+  return () => {
+    return {
+      defer: likes < 100 ? true : false
+    };
+  };
+}
+
 export const query = graphql`
   query ($id: String) {
     nycPhoto(id: { eq: $id }) {
