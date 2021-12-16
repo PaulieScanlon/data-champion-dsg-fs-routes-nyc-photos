@@ -46,7 +46,7 @@ const Template = ({
 export async function config() {
   return ({ params }) => {
     return {
-      defer: params.nycPhoto.likes < 100 ? true : false
+      defer: params.data.nycPhoto.likes < 100 ? true : false
     };
   };
 }
