@@ -46,7 +46,7 @@ const Template = ({
 export async function config() {
   return ({ params }) => {
     return {
-      defer: true
+      defer: params.likes < 100 ? true : false
     };
   };
 }
