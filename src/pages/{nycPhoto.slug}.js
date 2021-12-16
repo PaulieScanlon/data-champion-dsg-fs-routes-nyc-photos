@@ -43,15 +43,7 @@ const Template = ({
   );
 };
 
-export async function config() {
-  return ({ params }) => {
-    return {
-      defer: params.data.nycPhoto.likes < 100 ? true : false
-    };
-  };
-}
-
-export const query = graphql`
+const query = graphql`
   query ($id: String) {
     nycPhoto(id: { eq: $id }) {
       description
@@ -67,5 +59,17 @@ export const query = graphql`
     }
   }
 `;
+
+export async function config() {
+  const data = await query;
+
+  return ({ params }) => {
+    return {
+      defer: data.nycPhoto.likes < 100
+    };
+  };
+}
+
+export { query };
 
 export default Template;
