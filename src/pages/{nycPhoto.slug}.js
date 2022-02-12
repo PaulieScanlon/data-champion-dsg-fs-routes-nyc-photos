@@ -26,7 +26,12 @@ const Template = ({
         <h1 className="font-black text-3xl ">{description}</h1>
         <p className="text-sm font-normal">{alt_description}</p>
         <div className="grid grid-cols-auto-1fr gap-4 items-end text-sm">
-          <a href={portfolio_url} target="_blank" rel="noreferrer" className="cursor-pointer grid grid-cols-auto-1fr gap-1 items-center hover:text-purple-200 transition">
+          <a
+            href={portfolio_url}
+            target="_blank"
+            rel="noreferrer"
+            className="cursor-pointer grid grid-cols-auto-1fr gap-1 items-center hover:text-purple-200 transition"
+          >
             <User />
             {name}
           </a>
@@ -43,7 +48,27 @@ const Template = ({
   );
 };
 
-const query = graphql`
+export async function config() {
+  const { data } = graphql`
+    {
+      unpopularPosts: allNycPhoto(filter: { likes: { lt: 100 } }) {
+        nodes {
+          slug
+        }
+      }
+    }
+  `;
+
+  const unpopularPosts = new Set(data.unpopularPosts.nodes.map((n) => n.slug));
+
+  return ({ params }) => {
+    return {
+      defer: unpopularPosts.has(params.slug)
+    };
+  };
+}
+
+export const query = graphql`
   query ($id: String) {
     nycPhoto(id: { eq: $id }) {
       description
@@ -59,17 +84,5 @@ const query = graphql`
     }
   }
 `;
-
-export async function config() {
-  const data = await query;
-
-  return ({ params }) => {
-    return {
-      defer: data.nycPhoto.likes < 100
-    };
-  };
-}
-
-export { query };
 
 export default Template;
